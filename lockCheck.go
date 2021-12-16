@@ -27,36 +27,45 @@ type LockCheck struct {
 	chans chan *LockChan
 }
 
+/**
+第一个参数：执行参数大于当前多少s打印 默认60s
+第二个参数: 多长时间检测一次 默认 1分钟
+ */
 func GetLockCheck(ts ...interface{}) *LockCheck{
 	onces.Do(func() {
-		var t int64
-		var tickMin time.Duration
-		if ts != nil && len(ts) > 0  {
-			switch s := ts[0].(type) {
-			case int:
-				t = int64(s)
-			case int64:
-				t = s
-			}
 
-			if len(ts) == 1{
-				tickMin = time.Minute * 1
-			}else{
-				tickMin = ts[1].(time.Duration)
-			}
-		}else{
-			t = 60
-		}
 		g_pLockCheck = &LockCheck{
 			dataFunc:make(map[uint64]*funcElem,0),
-			checkTime:t,
-			checkTimer: tickMin,
 			chans: make(chan *LockChan,20),
 		}
+		g_pLockCheck.setTickMin(ts) // 设置检测时间
 		go g_pLockCheck.LockRun()
 	})
 
 	return g_pLockCheck
+}
+
+func (c *LockCheck)setTickMin(ts ...interface{})  {
+	var t int64
+	var tickMin time.Duration
+	if ts != nil && len(ts) > 0  {
+		switch s := ts[0].(type) {
+		case int:
+			t = int64(s)
+		case int64:
+			t = s
+		}
+		if len(ts) == 1{
+			tickMin = time.Minute * 1
+		}else{
+			tickMin = ts[1].(time.Duration)
+		}
+	}else{
+		t = 60
+		tickMin = time.Minute * 1
+	}
+	c.checkTime = t
+	c.checkTimer = tickMin
 }
 
 func (c *LockCheck)GetLockChan() chan *LockChan  {
@@ -113,11 +122,11 @@ func (l* LockCheck)Print(){
 	}()
 	arrList:=make([]funcElem,0)
 	l.Lock()
-	defer l.Unlock()
 	for _,v:=range l.dataFunc{
 		arrList = append(arrList,*v)
 	}
-	go l.printThread(arrList)
+	l.Unlock()
+	l.printThread(arrList)
 }
 
 func (c *LockCheck)printThread(arrList []funcElem){
@@ -125,7 +134,6 @@ func (c *LockCheck)printThread(arrList []funcElem){
 	for _,v:=range arrList{
 		if currTime - v.visitTime > c.checkTime{ //超过60秒
 			c.setLockChan(v.name,currTime - v.visitTime)
-			//zlog.F("lock").Errorf("func spend over time:%ds,name:%s,",currTime - v.visitTime,v.name)
 		}
 	}
 }
