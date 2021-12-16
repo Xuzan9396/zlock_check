@@ -1,4 +1,4 @@
-module zlock_check
+module github.com/Xuzan9396/zlock_check
 
 go 1.16
 
