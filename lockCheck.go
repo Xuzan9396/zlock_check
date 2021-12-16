@@ -1,5 +1,4 @@
-
-package logic
+package zlock_check
 
 import (
 	"sync"

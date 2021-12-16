@@ -1,4 +1,4 @@
-package logic
+package zlock_check
 
 import (
 	"github.com/Xuzan9396/zlog"
