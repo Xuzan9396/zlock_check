@@ -8,10 +8,9 @@ import (
 )
 
 func Test_timeCheck(t *testing.T)  {
-	model := NewTimeCheck()
 	var sg sync.WaitGroup
 	go func() {
-		for i := range model.GetChan() {
+		for i := range GetTimeChan() {
 			log.Println("超时检测函数:",i.FuncName,i.DiffTime,"ms")
 		}
 	}()
@@ -21,7 +20,6 @@ func Test_timeCheck(t *testing.T)  {
 		check()
 
 	}()
-
 
 
 	go func() {
@@ -34,16 +32,14 @@ func Test_timeCheck(t *testing.T)  {
 }
 
 func check(res ...int64)  {
-	start := NewTimeCheck().Start()
-	defer NewTimeCheck().End(start,"check",100)
+	defer TimeEnd(TimeStart(),"check",100)
 	time.Sleep(2*time.Second)
 	log.Println(res == nil )
 }
 
 
-
 func checkv2(res ...int64)  {
-	defer NewTimeCheck().End(NewTimeCheck().Start(),"check",100)
+	defer TimeEnd(TimeStart(),"checkv2",100)
 	time.Sleep(3*time.Second)
 	log.Println(res == nil )
 }

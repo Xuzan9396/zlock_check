@@ -17,7 +17,7 @@ type RespCheck struct {
 	DiffTime  int64
 }
 
-func NewTimeCheck() *TimeCheck {
+func newTimeCheck() *TimeCheck {
 	timeOnce.Do(func() {
 		timeCheck = &TimeCheck{
 			chans: make(chan *RespCheck,1000),
@@ -26,8 +26,8 @@ func NewTimeCheck() *TimeCheck {
 	return timeCheck
 }
 
-func (c *TimeCheck)GetChan() chan *RespCheck{
-	return c.chans
+func GetTimeChan() chan *RespCheck{
+	return newTimeCheck().chans
 }
 
 func (c *TimeCheck)setChan(diff int64,funcName string )  {
@@ -42,12 +42,12 @@ func (c *TimeCheck)setChan(diff int64,funcName string )  {
 	}
 }
 
-func (c *TimeCheck)Start() int64 {
+func TimeStart() int64 {
 	return  time.Now().UnixNano() / 1000000
 }
 
 // 毫秒超过多少毫秒打印
-func (c *TimeCheck)End(startTime int64,funcName string ,overs ...int64)  {
+func TimeEnd(startTime int64,funcName string ,overs ...int64)  {
 	lastTime := time.Now().UnixNano() / 1000000
 	diff := lastTime- startTime
 	var over int64
@@ -57,6 +57,6 @@ func (c *TimeCheck)End(startTime int64,funcName string ,overs ...int64)  {
 		over = 100
 	}
 	if diff > over{
-		c.setChan(diff,funcName)
+		newTimeCheck().setChan(diff,funcName)
 	}
 }

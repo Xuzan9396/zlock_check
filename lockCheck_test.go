@@ -8,12 +8,12 @@ import (
 
 func Test_lock(t *testing.T)  {
 	zlog.SetEnv(zlog.LOG_DEBUG)
-	lockChek := GetLockCheck()
-	index := lockChek.AddFunc("testv1")
-	defer lockChek.DelFunc(index)
+	InitLockCheck(5,5*time.Second)
+	index := AddLockFunc("testv1")
+	defer DelLockFunc(index)
 
 	go func() {
-		for i := range lockChek.GetLockChan(){
+		for i := range GetLockChan(){
 			zlog.F("lock").Error(i.Name , " ",i.Time ,"s")
 		}
 	}()
