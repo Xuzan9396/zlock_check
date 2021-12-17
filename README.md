@@ -6,30 +6,23 @@ package main
 import (
 	"github.com/Xuzan9396/zlock_check"
 	"log"
-	"runtime"
 	"time"
 )
 
 func main()  {
-	//lockChek := zlock_check.GetLockCheck(5,5*time.Second)
-	lockChek := zlock_check.GetLockCheck()
-	index := lockChek.AddFunc(runFuncName())
-	defer lockChek.DelFunc(index)
+	// 超过5s检测, 5s检测一次
+	zlock_check.InitLockCheck(5,5*time.Second) // 不执行则默认 取  超过60s,1分钟执行一次
+	defer zlock_check.DelLockFunc(zlock_check.AddLockFunc("test"))
 	go func() {
-		for i := range lockChek.GetLockChan(){
+		for i := range zlock_check.GetLockChan(){
 			log.Println("锁住的函数",i.Name,i.Time)
 		}
 	}()
-	for{
-		time.Sleep(1*time.Second)
+	select {
+
 	}
 }
 
-func runFuncName()string{
-	pc := make([]uintptr,1)
-	runtime.Callers(2,pc)
-	f := runtime.FuncForPC(pc[0])
-	return f.Name()
 }
 ```
 
@@ -47,10 +40,9 @@ import (
 
 
 func main()  {
-	model := zlock_check.NewTimeCheck()
 	var sg sync.WaitGroup
 	go func() {
-		for i := range model.GetChan() {
+		for i := range zlock_check.GetTimeChan() {
 			log.Println("超时检测函数:",i.FuncName,i.DiffTime,"ms")
 		}
 	}()
@@ -60,28 +52,26 @@ func main()  {
 		check()
 
 	}()
-
 	go func() {
 		defer sg.Done()
 		checkv2()
 
 	}()
 	sg.Wait()
+	time.Sleep(2*time.Second)
 
 }
 
 func check(res ...int64)  {
-	start := zlock_check.NewTimeCheck().Start()
-	defer zlock_check.NewTimeCheck().End(start,"check",100)
+	defer zlock_check.TimeEnd(zlock_check.TimeStart(),"check",100)
 	time.Sleep(2*time.Second)
 	log.Println(res == nil )
 }
 
 
-
 func checkv2(res ...int64)  {
-	defer zlock_check.NewTimeCheck().End(zlock_check.NewTimeCheck().Start(),"checkv2",100)
+	defer zlock_check.TimeEnd(zlock_check.TimeStart(),"checkv2",100)
 	time.Sleep(3*time.Second)
 	log.Println(res == nil )
-}
+}}
 ```
