@@ -71,8 +71,8 @@ func main()  {
 }
 
 func check(res ...int64)  {
-	start := NewTimeCheck().Start()
-	defer NewTimeCheck().End(start,"check",100)
+	start := zlock_check.NewTimeCheck().Start()
+	defer zlock_check.NewTimeCheck().End(start,"check",100)
 	time.Sleep(2*time.Second)
 	log.Println(res == nil )
 }
@@ -80,7 +80,7 @@ func check(res ...int64)  {
 
 
 func checkv2(res ...int64)  {
-	defer NewTimeCheck().End(NewTimeCheck().Start(),"checkv2",100)
+	defer zlock_check.NewTimeCheck().End(zlock_check.NewTimeCheck().Start(),"checkv2",100)
 	time.Sleep(3*time.Second)
 	log.Println(res == nil )
 }
