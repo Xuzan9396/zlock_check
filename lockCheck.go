@@ -32,7 +32,7 @@ type lockCheck struct {
 }
 /**
 第一个参数：执行参数大于当前多少s打印 默认60s
-第二个参数: 多长时间检测一次 默认 1分钟
+第二个参数: 多长时间检测一次 默认 1分钟 时间
 */
 func InitLockCheck(t int64 ,s time.Duration)  {
 	if checkTime <= 0 || checkTimer <= 0*time.Second {

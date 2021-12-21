@@ -17,6 +17,7 @@ func Test_lock(t *testing.T)  {
 			zlog.F("lock").Error(i.Name , " ",i.Time ,"s")
 		}
 	}()
+
 	for{
 		time.Sleep(1*time.Second)
 	}

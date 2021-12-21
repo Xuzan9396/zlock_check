@@ -63,6 +63,7 @@ func main()  {
 }
 
 func check(res ...int64)  {
+	// 最后一位参数100为毫秒
 	defer zlock_check.TimeEnd(zlock_check.TimeStart(),"check",100)
 	time.Sleep(2*time.Second)
 	log.Println(res == nil )
@@ -73,5 +74,5 @@ func checkv2(res ...int64)  {
 	defer zlock_check.TimeEnd(zlock_check.TimeStart(),"checkv2",100)
 	time.Sleep(3*time.Second)
 	log.Println(res == nil )
-}}
+}
 ```
