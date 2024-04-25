@@ -15,7 +15,7 @@ func main()  {
 	defer zlock_check.DelLockFunc(zlock_check.AddLockFunc("test"))
 	go func() {
 		for i := range zlock_check.GetLockChan(){
-			log.Println("锁住的函数",i.Name,i.Time)
+			log.Println("锁住的函数",i.Name,i.Time,"编号:",i.Id)
 		}
 	}()
 	select {
